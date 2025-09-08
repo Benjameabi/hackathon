@@ -1,803 +1,538 @@
-/* ===========================
-   JavaScript Boilerplate
-   Modern ES6+ Best Practices
-   =========================== */
+/* =====================================
+   📚 BEGINNER JAVASCRIPT STUDY GUIDE
+   ===================================== */
 
-// Strict mode for better error handling
-'use strict';
-
-/* ===========================
-   Utility Functions
-   =========================== */
-
-/**
- * Utility object containing common helper functions
+/*
+ * 🎯 WHAT IS JAVASCRIPT?
+ * JavaScript is a programming language that makes websites interactive.
+ * It can change text, colors, respond to clicks, and much more!
+ * 
+ * 📝 HOW TO STUDY THIS FILE:
+ * 1. Read each section carefully
+ * 2. Try to understand what each line does
+ * 3. Experiment by changing values
+ * 4. Use the browser console (F12) to test code
  */
-const Utils = {
-    /**
-     * Debounce function to limit function calls
-     * @param {Function} func - Function to debounce
-     * @param {number} wait - Wait time in milliseconds
-     * @param {boolean} immediate - Execute immediately
-     * @returns {Function} Debounced function
-     */
-    debounce(func, wait, immediate = false) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                timeout = null;
-                if (!immediate) func(...args);
-            };
-            const callNow = immediate && !timeout;
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-            if (callNow) func(...args);
-        };
-    },
 
-    /**
-     * Throttle function to limit function calls
-     * @param {Function} func - Function to throttle
-     * @param {number} limit - Time limit in milliseconds
-     * @returns {Function} Throttled function
-     */
-    throttle(func, limit) {
-        let inThrottle;
-        return function executedFunction(...args) {
-            if (!inThrottle) {
-                func.apply(this, args);
-                inThrottle = true;
-                setTimeout(() => inThrottle = false, limit);
-            }
-        };
-    },
+// =====================================
+// 📖 SECTION 1: VARIABLES & DATA TYPES
+// =====================================
 
-    /**
-     * Deep clone an object
-     * @param {Object} obj - Object to clone
-     * @returns {Object} Cloned object
-     */
-    deepClone(obj) {
-        if (obj === null || typeof obj !== 'object') return obj;
-        if (obj instanceof Date) return new Date(obj.getTime());
-        if (obj instanceof Array) return obj.map(item => this.deepClone(item));
-        if (typeof obj === 'object') {
-            const clonedObj = {};
-            for (const key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    clonedObj[key] = this.deepClone(obj[key]);
-                }
-            }
-            return clonedObj;
-        }
-    },
+/*
+ * 🧠 WHAT ARE VARIABLES?
+ * Variables are like boxes that store information.
+ * Think of them as labeled containers that hold different types of data.
+ */
 
-    /**
-     * Generate a random ID
-     * @param {number} length - Length of the ID
-     * @returns {string} Random ID
-     */
-    generateId(length = 8) {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        for (let i = 0; i < length; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return result;
-    },
+// 📌 DIFFERENT WAYS TO CREATE VARIABLES:
 
-    /**
-     * Format currency
-     * @param {number} amount - Amount to format
-     * @param {string} currency - Currency code (default: USD)
-     * @param {string} locale - Locale (default: en-US)
-     * @returns {string} Formatted currency
-     */
-    formatCurrency(amount, currency = 'USD', locale = 'en-US') {
-        return new Intl.NumberFormat(locale, {
-            style: 'currency',
-            currency: currency
-        }).format(amount);
-    },
+// let - for variables that can change
+let studentName = "Alice";           // Text (string)
+let studentAge = 20;                 // Number
+let isStudent = true;                // True/false (boolean)
 
-    /**
-     * Format date
-     * @param {Date|string} date - Date to format
-     * @param {Object} options - Formatting options
-     * @param {string} locale - Locale (default: en-US)
-     * @returns {string} Formatted date
-     */
-    formatDate(date, options = {}, locale = 'en-US') {
-        const defaultOptions = {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
-        const formatOptions = { ...defaultOptions, ...options };
-        return new Intl.DateFormat(locale, formatOptions).format(new Date(date));
-    },
+// const - for variables that never change
+const schoolName = "Chas Academy";   // This will always be the same
+const maxStudents = 30;              // This limit won't change
 
-    /**
-     * Validate email address
-     * @param {string} email - Email to validate
-     * @returns {boolean} Is valid email
-     */
-    isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    },
+// Examples of changing variables:
+console.log("Before:", studentName);  // Shows: Alice
+studentName = "Bob";                  // Changing the value
+console.log("After:", studentName);   // Shows: Bob
 
-    /**
-     * Sanitize HTML string
-     * @param {string} str - String to sanitize
-     * @returns {string} Sanitized string
-     */
-    sanitizeHTML(str) {
-        const temp = document.createElement('div');
-        temp.textContent = str;
-        return temp.innerHTML;
-    },
+/*
+ * 🎓 STUDY NOTES - DATA TYPES:
+ * 
+ * 1. STRING (text): Always in quotes "like this" or 'like this'
+ * 2. NUMBER: Any number like 25, 3.14, -10
+ * 3. BOOLEAN: Only true or false
+ * 4. UNDEFINED: Variable exists but has no value yet
+ * 5. NULL: Intentionally empty value
+ */
 
-    /**
-     * Get element by selector with error handling
-     * @param {string} selector - CSS selector
-     * @param {Element} parent - Parent element (optional)
-     * @returns {Element|null} Found element or null
-     */
-    $(selector, parent = document) {
-        try {
-            return parent.querySelector(selector);
-        } catch (error) {
-            console.error('Invalid selector:', selector, error);
-            return null;
-        }
-    },
+// =====================================
+// 📖 SECTION 2: FUNCTIONS (REUSABLE CODE)
+// =====================================
 
-    /**
-     * Get all elements by selector with error handling
-     * @param {string} selector - CSS selector
-     * @param {Element} parent - Parent element (optional)
-     * @returns {NodeList|Array} Found elements
-     */
-    $$(selector, parent = document) {
-        try {
-            return parent.querySelectorAll(selector);
-        } catch (error) {
-            console.error('Invalid selector:', selector, error);
-            return [];
-        }
+/*
+ * 🧠 WHAT ARE FUNCTIONS?
+ * Functions are like recipes - they contain instructions that you can use over and over.
+ * Instead of writing the same code multiple times, you create a function once and use it many times.
+ */
+
+// 📌 SIMPLE FUNCTION EXAMPLE:
+function sayHello() {
+    console.log("Hello, World!");
+}
+
+// To use (or "call") the function:
+sayHello(); // This will print "Hello, World!" to the console
+
+// 📌 FUNCTION WITH PARAMETERS (inputs):
+function greetStudent(name) {
+    console.log("Hello, " + name + "!");
+}
+
+// Using the function with different inputs:
+greetStudent("Emma");    // Prints: Hello, Emma!
+greetStudent("Lucas");   // Prints: Hello, Lucas!
+
+// 📌 FUNCTION THAT RETURNS A VALUE:
+function addTwoNumbers(firstNumber, secondNumber) {
+    let result = firstNumber + secondNumber;
+    return result; // Sends the answer back
+}
+
+// Using the function and storing the result:
+let sum = addTwoNumbers(5, 3);
+console.log("5 + 3 = " + sum); // Shows: 5 + 3 = 8
+
+/*
+ * 🎓 STUDY NOTES - FUNCTIONS:
+ * 
+ * 1. function - the keyword that creates a function
+ * 2. functionName() - the name you give your function
+ * 3. parameters - inputs the function needs (go inside parentheses)
+ * 4. return - sends a value back when the function is done
+ * 5. Calling a function - using the function by writing its name with ()
+ */
+
+// =====================================
+// 📖 SECTION 3: WORKING WITH HTML ELEMENTS
+// =====================================
+
+/*
+ * 🧠 WHAT IS THE DOM?
+ * DOM stands for "Document Object Model" - it's how JavaScript talks to HTML.
+ * Think of it as JavaScript's way to find and change things on a webpage.
+ */
+
+// 📌 FINDING ELEMENTS ON THE PAGE:
+
+// Find an element by its ID
+function findElementById(elementId) {
+    let element = document.getElementById(elementId);
+    return element;
+}
+
+// Find an element by its class name
+function findElementByClass(className) {
+    let element = document.querySelector('.' + className);
+    return element;
+}
+
+// 📌 CHANGING WHAT'S ON THE PAGE:
+
+function changeTextContent(elementId, newText) {
+    let element = findElementById(elementId);
+    if (element) { // Check if element exists
+        element.textContent = newText;
+        console.log("Changed text to: " + newText);
+    } else {
+        console.log("Element not found!");
     }
-};
+}
 
-/* ===========================
-   DOM Helper Functions
-   =========================== */
+// 📌 ADDING CSS CLASSES (for styling):
 
-/**
- * DOM manipulation utilities
+function addStyleClass(elementId, className) {
+    let element = findElementById(elementId);
+    if (element) {
+        element.classList.add(className);
+        console.log("Added class: " + className);
+    }
+}
+
+function removeStyleClass(elementId, className) {
+    let element = findElementById(elementId);
+    if (element) {
+        element.classList.remove(className);
+        console.log("Removed class: " + className);
+    }
+}
+
+/*
+ * 🎓 STUDY NOTES - DOM MANIPULATION:
+ * 
+ * 1. document - represents the entire webpage
+ * 2. getElementById() - finds an element with a specific ID
+ * 3. querySelector() - finds an element with a CSS selector
+ * 4. textContent - the text inside an element
+ * 5. classList - controls CSS classes on an element
+ * 6. Always check if element exists before using it!
  */
-const DOM = {
-    /**
-     * Add event listener with automatic cleanup
-     * @param {Element|string} element - Element or selector
-     * @param {string} event - Event type
-     * @param {Function} handler - Event handler
-     * @param {Object} options - Event options
-     */
-    on(element, event, handler, options = {}) {
-        const el = typeof element === 'string' ? Utils.$(element) : element;
-        if (el) {
-            el.addEventListener(event, handler, options);
-            // Store for potential cleanup
-            if (!el._eventListeners) el._eventListeners = [];
-            el._eventListeners.push({ event, handler, options });
-        }
-    },
 
-    /**
-     * Remove event listener
-     * @param {Element|string} element - Element or selector
-     * @param {string} event - Event type
-     * @param {Function} handler - Event handler
-     */
-    off(element, event, handler) {
-        const el = typeof element === 'string' ? Utils.$(element) : element;
-        if (el) {
-            el.removeEventListener(event, handler);
-        }
-    },
+// =====================================
+// 📖 SECTION 4: EVENT HANDLING (USER INTERACTIONS)
+// =====================================
 
-    /**
-     * Add CSS class
-     * @param {Element|string} element - Element or selector
-     * @param {string} className - Class name to add
-     */
-    addClass(element, className) {
-        const el = typeof element === 'string' ? Utils.$(element) : element;
-        if (el) {
-            el.classList.add(className);
-        }
-    },
+/*
+ * 🧠 WHAT ARE EVENTS?
+ * Events are things that happen on a webpage: clicks, typing, scrolling, etc.
+ * JavaScript can "listen" for these events and respond to them.
+ */
 
-    /**
-     * Remove CSS class
-     * @param {Element|string} element - Element or selector
-     * @param {string} className - Class name to remove
-     */
-    removeClass(element, className) {
-        const el = typeof element === 'string' ? Utils.$(element) : element;
-        if (el) {
-            el.classList.remove(className);
-        }
-    },
+// 📌 RESPONDING TO BUTTON CLICKS:
 
-    /**
-     * Toggle CSS class
-     * @param {Element|string} element - Element or selector
-     * @param {string} className - Class name to toggle
-     */
-    toggleClass(element, className) {
-        const el = typeof element === 'string' ? Utils.$(element) : element;
-        if (el) {
-            el.classList.toggle(className);
-        }
-    },
-
-    /**
-     * Check if element has class
-     * @param {Element|string} element - Element or selector
-     * @param {string} className - Class name to check
-     * @returns {boolean} Has class
-     */
-    hasClass(element, className) {
-        const el = typeof element === 'string' ? Utils.$(element) : element;
-        return el ? el.classList.contains(className) : false;
-    },
-
-    /**
-     * Set CSS styles
-     * @param {Element|string} element - Element or selector
-     * @param {Object} styles - Styles object
-     */
-    setStyles(element, styles) {
-        const el = typeof element === 'string' ? Utils.$(element) : element;
-        if (el) {
-            Object.assign(el.style, styles);
-        }
-    },
-
-    /**
-     * Create element with attributes
-     * @param {string} tag - HTML tag
-     * @param {Object} attributes - Attributes object
-     * @param {string} content - Inner content
-     * @returns {Element} Created element
-     */
-    createElement(tag, attributes = {}, content = '') {
-        const element = document.createElement(tag);
-        
-        Object.entries(attributes).forEach(([key, value]) => {
-            if (key === 'className') {
-                element.className = value;
-            } else if (key === 'dataset') {
-                Object.entries(value).forEach(([dataKey, dataValue]) => {
-                    element.dataset[dataKey] = dataValue;
-                });
-            } else {
-                element.setAttribute(key, value);
-            }
+function setupButtonClick(buttonId) {
+    let button = findElementById(buttonId);
+    
+    if (button) {
+        // Add an event listener (waits for clicks)
+        button.addEventListener('click', function() {
+            console.log("Button was clicked!");
+            alert("Hello! You clicked the button.");
         });
-
-        if (content) {
-            element.innerHTML = content;
-        }
-
-        return element;
     }
-};
+}
 
-/* ===========================
-   API Helper Functions
-   =========================== */
+// 📌 HANDLING FORM SUBMISSIONS:
 
-/**
- * API utilities for HTTP requests
- */
-const API = {
-    /**
-     * Base fetch wrapper with error handling
-     * @param {string} url - Request URL
-     * @param {Object} options - Fetch options
-     * @returns {Promise} Fetch promise
-     */
-    async request(url, options = {}) {
-        const defaultOptions = {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
-
-        const config = {
-            ...defaultOptions,
-            ...options,
-            headers: {
-                ...defaultOptions.headers,
-                ...options.headers,
-            },
-        };
-
-        try {
-            const response = await fetch(url, config);
+function setupContactForm() {
+    let form = findElementById('contactForm');
+    
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            // Prevent the page from refreshing
+            event.preventDefault();
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                return await response.json();
-            }
+            // Get form data
+            let nameInput = findElementById('name');
+            let emailInput = findElementById('email');
+            let messageInput = findElementById('message');
             
-            return await response.text();
-        } catch (error) {
-            console.error('API Request failed:', error);
-            throw error;
-        }
-    },
-
-    /**
-     * GET request
-     * @param {string} url - Request URL
-     * @param {Object} options - Additional options
-     * @returns {Promise} Response data
-     */
-    get(url, options = {}) {
-        return this.request(url, { ...options, method: 'GET' });
-    },
-
-    /**
-     * POST request
-     * @param {string} url - Request URL
-     * @param {Object} data - Request body data
-     * @param {Object} options - Additional options
-     * @returns {Promise} Response data
-     */
-    post(url, data, options = {}) {
-        return this.request(url, {
-            ...options,
-            method: 'POST',
-            body: JSON.stringify(data),
-        });
-    },
-
-    /**
-     * PUT request
-     * @param {string} url - Request URL
-     * @param {Object} data - Request body data
-     * @param {Object} options - Additional options
-     * @returns {Promise} Response data
-     */
-    put(url, data, options = {}) {
-        return this.request(url, {
-            ...options,
-            method: 'PUT',
-            body: JSON.stringify(data),
-        });
-    },
-
-    /**
-     * DELETE request
-     * @param {string} url - Request URL
-     * @param {Object} options - Additional options
-     * @returns {Promise} Response data
-     */
-    delete(url, options = {}) {
-        return this.request(url, { ...options, method: 'DELETE' });
-    }
-};
-
-/* ===========================
-   Form Handling
-   =========================== */
-
-/**
- * Form utilities
- */
-const Form = {
-    /**
-     * Serialize form data to object
-     * @param {HTMLFormElement} form - Form element
-     * @returns {Object} Form data object
-     */
-    serialize(form) {
-        const formData = new FormData(form);
-        const data = {};
-        
-        for (const [key, value] of formData.entries()) {
-            if (data[key]) {
-                // Handle multiple values (checkboxes, etc.)
-                if (Array.isArray(data[key])) {
-                    data[key].push(value);
-                } else {
-                    data[key] = [data[key], value];
-                }
+            // Check if all fields are filled
+            if (nameInput.value && emailInput.value && messageInput.value) {
+                console.log("Form submitted successfully!");
+                console.log("Name:", nameInput.value);
+                console.log("Email:", emailInput.value);
+                console.log("Message:", messageInput.value);
+                alert("Thank you! Your message was sent.");
+                
+                // Clear the form
+                form.reset();
             } else {
-                data[key] = value;
-            }
-        }
-        
-        return data;
-    },
-
-    /**
-     * Validate form with custom rules
-     * @param {HTMLFormElement} form - Form element
-     * @param {Object} rules - Validation rules
-     * @returns {Object} Validation result
-     */
-    validate(form, rules = {}) {
-        const errors = {};
-        const data = this.serialize(form);
-
-        Object.entries(rules).forEach(([field, validators]) => {
-            const value = data[field];
-            const fieldErrors = [];
-
-            validators.forEach(validator => {
-                if (typeof validator === 'function') {
-                    const result = validator(value, data);
-                    if (result !== true) {
-                        fieldErrors.push(result);
-                    }
-                }
-            });
-
-            if (fieldErrors.length > 0) {
-                errors[field] = fieldErrors;
+                alert("Please fill in all fields!");
             }
         });
-
-        return {
-            isValid: Object.keys(errors).length === 0,
-            errors,
-            data
-        };
-    },
-
-    /**
-     * Common validation rules
-     */
-    rules: {
-        required: (value) => value && value.trim() !== '' || 'This field is required',
-        email: (value) => !value || Utils.isValidEmail(value) || 'Please enter a valid email',
-        minLength: (min) => (value) => !value || value.length >= min || `Minimum ${min} characters required`,
-        maxLength: (max) => (value) => !value || value.length <= max || `Maximum ${max} characters allowed`,
-        pattern: (regex, message) => (value) => !value || regex.test(value) || message
     }
-};
+}
 
-/* ===========================
-   App Initialization
-   =========================== */
-
-/**
- * Main application object
+/*
+ * 🎓 STUDY NOTES - EVENTS:
+ * 
+ * 1. addEventListener() - tells JavaScript to listen for an event
+ * 2. 'click' - the type of event (click, submit, keypress, etc.)
+ * 3. function() - what to do when the event happens
+ * 4. event.preventDefault() - stops the default action
+ * 5. .value - gets the text from input fields
+ * 6. .reset() - clears all form fields
  */
-const App = {
-    /**
-     * Initialize the application
-     */
-    init() {
-        console.log('🚀 App initialized');
-        
-        // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.setupEventListeners());
+
+// =====================================
+// 📖 SECTION 5: SIMPLE ANIMATIONS & EFFECTS
+// =====================================
+
+/*
+ * 🧠 WHAT ARE ANIMATIONS?
+ * Animations make things move or change gradually on the page.
+ * They make websites feel more alive and interactive!
+ */
+
+// 📌 SIMPLE SHOW/HIDE TOGGLE:
+
+function toggleVisibility(elementId) {
+    let element = findElementById(elementId);
+    
+    if (element) {
+        // Check if element is currently hidden
+        if (element.style.display === 'none') {
+            element.style.display = 'block'; // Show it
+            console.log("Element is now visible");
         } else {
-            this.setupEventListeners();
-        }
-    },
-
-    /**
-     * Set up event listeners
-     */
-    setupEventListeners() {
-        // Mobile menu toggle
-        this.setupMobileMenu();
-        
-        // Smooth scrolling for navigation links
-        this.setupSmoothScrolling();
-        
-        // Contact form handling
-        this.setupContactForm();
-        
-        // Scroll effects
-        this.setupScrollEffects();
-        
-        // Set up team-specific features
-        this.setupTeamFeatures();
-        
-        console.log('✅ Event listeners set up');
-    },
-
-    /**
-     * Set up mobile menu functionality
-     */
-    setupMobileMenu() {
-        const mobileMenu = Utils.$('#mobile-menu');
-        const navMenu = Utils.$('.nav-menu');
-
-        if (mobileMenu && navMenu) {
-            DOM.on(mobileMenu, 'click', () => {
-                DOM.toggleClass(mobileMenu, 'active');
-                DOM.toggleClass(navMenu, 'active');
-            });
-
-            // Close menu when clicking on a link
-            Utils.$$('.nav-link').forEach(link => {
-                DOM.on(link, 'click', () => {
-                    DOM.removeClass(mobileMenu, 'active');
-                    DOM.removeClass(navMenu, 'active');
-                });
-            });
-        }
-    },
-
-    /**
-     * Set up smooth scrolling for anchor links
-     */
-    setupSmoothScrolling() {
-        Utils.$$('a[href^="#"]').forEach(link => {
-            DOM.on(link, 'click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('href').substring(1);
-                const targetElement = Utils.$(`#${targetId}`);
-                
-                if (targetElement) {
-                    const headerHeight = Utils.$('.header')?.offsetHeight || 0;
-                    const targetPosition = targetElement.offsetTop - headerHeight;
-                    
-                    window.scrollTo({
-                        top: targetPosition,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-    },
-
-    /**
-     * Set up contact form handling
-     */
-    setupContactForm() {
-        const contactForm = Utils.$('#contactForm');
-        
-        if (contactForm) {
-            DOM.on(contactForm, 'submit', async (e) => {
-                e.preventDefault();
-                
-                const validation = Form.validate(contactForm, {
-                    name: [Form.rules.required],
-                    email: [Form.rules.required, Form.rules.email],
-                    message: [Form.rules.required, Form.rules.minLength(10)]
-                });
-
-                if (validation.isValid) {
-                    try {
-                        // Replace with your actual form submission logic
-                        console.log('Form data:', validation.data);
-                        
-                        // Simulate API call
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        
-                        alert('Thank you! Your message has been sent successfully.');
-                        contactForm.reset();
-                    } catch (error) {
-                        console.error('Form submission error:', error);
-                        alert('Sorry, there was an error sending your message. Please try again.');
-                    }
-                } else {
-                    console.log('Validation errors:', validation.errors);
-                    // Display validation errors to user
-                    Object.entries(validation.errors).forEach(([field, errors]) => {
-                        console.warn(`${field}: ${errors.join(', ')}`);
-                    });
-                }
-            });
-        }
-    },
-
-    /**
-     * Set up scroll effects
-     */
-    setupScrollEffects() {
-        // Header background on scroll
-        const header = Utils.$('.header');
-        if (header) {
-            const handleScroll = Utils.throttle(() => {
-                if (window.scrollY > 50) {
-                    DOM.addClass(header, 'scrolled');
-                } else {
-                    DOM.removeClass(header, 'scrolled');
-                }
-            }, 100);
-
-            window.addEventListener('scroll', handleScroll);
-        }
-
-        // Intersection Observer for animations
-        if ('IntersectionObserver' in window) {
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        DOM.addClass(entry.target, 'animate-in');
-                    }
-                });
-            }, observerOptions);
-
-            // Observe elements that should animate in
-            Utils.$$('.team-card, .stat-item, .section-content').forEach(el => {
-                observer.observe(el);
-            });
-        }
-
-        // Add team card interactions
-        this.setupTeamInteractions();
-    },
-
-    /**
-     * Set up team member card interactions
-     */
-    setupTeamInteractions() {
-        const teamCards = Utils.$$('.team-card');
-        
-        teamCards.forEach(card => {
-            // Add hover effect for accessibility
-            DOM.on(card, 'mouseenter', () => {
-                DOM.addClass(card, 'hovered');
-            });
-
-            DOM.on(card, 'mouseleave', () => {
-                DOM.removeClass(card, 'hovered');
-            });
-
-            // Add click interaction for mobile
-            DOM.on(card, 'click', () => {
-                const isActive = DOM.hasClass(card, 'active');
-                
-                // Remove active class from all cards
-                teamCards.forEach(otherCard => {
-                    DOM.removeClass(otherCard, 'active');
-                });
-
-                // Toggle active class on clicked card
-                if (!isActive) {
-                    DOM.addClass(card, 'active');
-                }
-            });
-        });
-    },
-
-    /**
-     * Add team-specific functionality
-     */
-    setupTeamFeatures() {
-        // Add LinkedIn sharing functionality
-        const createLinkedInPost = () => {
-            const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent('Kolla in vårt fantastiska utvecklingsteam från Chas Academy! 🚀 #chasacademy #webbutveckling #teamwork');
-            const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}&text=${text}`;
-            window.open(linkedinUrl, '_blank', 'width=600,height=400');
-        };
-
-        // Add LinkedIn share button if it exists
-        const linkedinBtn = Utils.$('#linkedin-share');
-        if (linkedinBtn) {
-            DOM.on(linkedinBtn, 'click', createLinkedInPost);
-        }
-
-        // Add GitHub Pages deployment check
-        this.checkDeploymentStatus();
-    },
-
-    /**
-     * Check if we're running on GitHub Pages
-     */
-    checkDeploymentStatus() {
-        const isGitHubPages = window.location.hostname.includes('github.io');
-        
-        if (isGitHubPages) {
-            console.log('🎉 Successfully deployed on GitHub Pages!');
-            
-            // Add deployment success indicator
-            const deploymentBadge = DOM.createElement('div', {
-                className: 'deployment-badge',
-                style: 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; z-index: 1001;'
-            }, '✅ Live on GitHub Pages');
-            
-            document.body.appendChild(deploymentBadge);
-            
-            // Remove badge after 5 seconds
-            setTimeout(() => {
-                deploymentBadge.remove();
-            }, 5000);
+            element.style.display = 'none';  // Hide it
+            console.log("Element is now hidden");
         }
     }
-    }
-};
-
-/* ===========================
-   Error Handling
-   =========================== */
-
-// Global error handler
-window.addEventListener('error', (event) => {
-    console.error('Global error:', event.error);
-    // You can send errors to a logging service here
-});
-
-// Unhandled promise rejection handler
-window.addEventListener('unhandledrejection', (event) => {
-    console.error('Unhandled promise rejection:', event.reason);
-    event.preventDefault(); // Prevent the default browser behavior
-});
-
-/* ===========================
-   Performance Monitoring
-   =========================== */
-
-// Simple performance monitoring
-const Performance = {
-    /**
-     * Measure function execution time
-     * @param {Function} fn - Function to measure
-     * @param {string} label - Label for the measurement
-     * @returns {*} Function result
-     */
-    measure(fn, label = 'Function') {
-        const start = performance.now();
-        const result = fn();
-        const end = performance.now();
-        console.log(`${label} execution time: ${(end - start).toFixed(2)}ms`);
-        return result;
-    },
-
-    /**
-     * Log page load metrics
-     */
-    logPageMetrics() {
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const navigation = performance.getEntriesByType('navigation')[0];
-                if (navigation) {
-                    console.log('📊 Page Performance Metrics:');
-                    console.log(`DOM Content Loaded: ${navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart}ms`);
-                    console.log(`Load Complete: ${navigation.loadEventEnd - navigation.loadEventStart}ms`);
-                    console.log(`Total Load Time: ${navigation.loadEventEnd - navigation.navigationStart}ms`);
-                }
-            }, 0);
-        });
-    }
-};
-
-/* ===========================
-   Initialize Application
-   =========================== */
-
-// Initialize the application
-App.init();
-
-// Log performance metrics in development
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    Performance.logPageMetrics();
 }
 
-// Export for potential module usage
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { Utils, DOM, API, Form, App, Performance };
+// 📌 CHANGE COLORS:
+
+function changeBackgroundColor(elementId, color) {
+    let element = findElementById(elementId);
+    
+    if (element) {
+        element.style.backgroundColor = color;
+        console.log("Changed background to: " + color);
+    }
 }
+
+// 📌 SMOOTH SCROLLING TO SECTIONS:
+
+function scrollToSection(sectionId) {
+    let section = findElementById(sectionId);
+    
+    if (section) {
+        // Smoothly scroll to the section
+        section.scrollIntoView({
+            behavior: 'smooth',  // Makes it slide smoothly
+            block: 'start'       // Aligns to the top
+        });
+    }
+}
+
+/*
+ * 🎓 STUDY NOTES - SIMPLE EFFECTS:
+ * 
+ * 1. .style - lets you change CSS properties with JavaScript
+ * 2. display: 'none' - hides an element completely
+ * 3. display: 'block' - shows an element
+ * 4. backgroundColor - changes the background color
+ * 5. scrollIntoView() - scrolls the page to show an element
+ * 6. behavior: 'smooth' - makes scrolling animated
+ */
+
+// =====================================
+// 📖 SECTION 6: PRACTICAL EXAMPLES
+// =====================================
+
+/*
+ * 🧠 REAL-WORLD EXAMPLES:
+ * Here are some practical functions you might use on a real website.
+ */
+
+// 📌 MOBILE MENU TOGGLE:
+
+function setupMobileMenu() {
+    let menuButton = findElementById('mobile-menu-button');
+    let menu = findElementById('mobile-menu');
+    
+    if (menuButton && menu) {
+        menuButton.addEventListener('click', function() {
+            // Toggle the 'active' class to show/hide menu
+            if (menu.classList.contains('active')) {
+                menu.classList.remove('active');
+                console.log("Menu closed");
+            } else {
+                menu.classList.add('active');
+                console.log("Menu opened");
+            }
+        });
+    }
+}
+
+// 📌 SIMPLE IMAGE GALLERY:
+
+function setupImageGallery() {
+    let thumbnails = document.querySelectorAll('.thumbnail');
+    let mainImage = findElementById('main-image');
+    
+    // Add click listeners to all thumbnails
+    thumbnails.forEach(function(thumbnail) {
+        thumbnail.addEventListener('click', function() {
+            // Get the large image URL from data attribute
+            let largeImageUrl = thumbnail.getAttribute('data-large');
+            
+            if (mainImage && largeImageUrl) {
+                mainImage.src = largeImageUrl;
+                console.log("Changed main image to:", largeImageUrl);
+            }
+        });
+    });
+}
+
+// 📌 SIMPLE COUNTER:
+
+let counter = 0; // Global variable to store count
+
+function increaseCounter() {
+    counter = counter + 1;
+    console.log("Counter is now:", counter);
+    
+    // Update the display
+    let counterDisplay = findElementById('counter-display');
+    if (counterDisplay) {
+        counterDisplay.textContent = counter;
+    }
+}
+
+function decreaseCounter() {
+    if (counter > 0) { // Don't go below zero
+        counter = counter - 1;
+        console.log("Counter is now:", counter);
+        
+        // Update the display
+        let counterDisplay = findElementById('counter-display');
+        if (counterDisplay) {
+            counterDisplay.textContent = counter;
+        }
+    }
+}
+
+function resetCounter() {
+    counter = 0;
+    console.log("Counter reset to 0");
+    
+    // Update the display
+    let counterDisplay = findElementById('counter-display');
+    if (counterDisplay) {
+        counterDisplay.textContent = counter;
+    }
+}
+
+/*
+ * 🎓 STUDY NOTES - PRACTICAL TIPS:
+ * 
+ * 1. Always check if elements exist before using them
+ * 2. Use console.log() to debug and see what's happening
+ * 3. Global variables (like counter) can be accessed by any function
+ * 4. querySelectorAll() finds ALL elements with a class/selector
+ * 5. forEach() loops through a list of elements
+ * 6. data-* attributes store custom information in HTML
+ */
+
+// =====================================
+// 📖 SECTION 7: INITIALIZATION (SETUP)
+// =====================================
+
+/*
+ * 🧠 WHAT IS INITIALIZATION?
+ * This is where we set up everything when the page loads.
+ * It's like preparing all the ingredients before cooking!
+ */
+
+// 📌 MAIN SETUP FUNCTION:
+
+function initializeWebsite() {
+    console.log("🚀 Website is starting up...");
+    
+    // Set up all our interactive features
+    setupButtonClick('main-button');
+    setupContactForm();
+    setupMobileMenu();
+    setupImageGallery();
+    
+    // Set up counter buttons
+    let increaseBtn = findElementById('increase-btn');
+    let decreaseBtn = findElementById('decrease-btn');
+    let resetBtn = findElementById('reset-btn');
+    
+    if (increaseBtn) {
+        increaseBtn.addEventListener('click', increaseCounter);
+    }
+    if (decreaseBtn) {
+        decreaseBtn.addEventListener('click', decreaseCounter);
+    }
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetCounter);
+    }
+    
+    console.log("✅ Website setup complete!");
+}
+
+// 📌 WAIT FOR PAGE TO LOAD, THEN INITIALIZE:
+
+// Check if the page is already loaded
+if (document.readyState === 'loading') {
+    // Page is still loading, wait for it to finish
+    document.addEventListener('DOMContentLoaded', initializeWebsite);
+} else {
+    // Page is already loaded, start immediately
+    initializeWebsite();
+}
+
+/*
+ * 🎓 STUDY NOTES - INITIALIZATION:
+ * 
+ * 1. DOMContentLoaded - fires when HTML is fully loaded
+ * 2. document.readyState - tells us if page is still loading
+ * 3. Put all setup code in one place for organization
+ * 4. Always wait for page to load before accessing elements
+ * 5. Use console messages to track what's happening
+ */
+
+// =====================================
+// 📖 SECTION 8: HELPFUL DEBUGGING TIPS
+// =====================================
+
+/*
+ * 🧠 HOW TO DEBUG (FIND PROBLEMS):
+ * When your code doesn't work, these tips will help you find out why!
+ */
+
+// 📌 CONSOLE LOGGING FOR DEBUGGING:
+
+function debugExample() {
+    console.log("🔍 Starting debug example...");
+    
+    let testElement = findElementById('test-element');
+    console.log("Found element:", testElement); // Will show null if not found
+    
+    if (testElement) {
+        console.log("Element text:", testElement.textContent);
+        console.log("Element classes:", testElement.className);
+    } else {
+        console.log("❌ Element not found! Check your HTML ID.");
+    }
+}
+
+// 📌 ERROR HANDLING:
+
+function safeFunction(elementId) {
+    try {
+        // Code that might cause an error
+        let element = findElementById(elementId);
+        element.textContent = "New text";
+        console.log("✅ Success!");
+    } catch (error) {
+        // If an error happens, this runs instead
+        console.log("❌ Error occurred:", error.message);
+        console.log("💡 Tip: Check if the element exists in your HTML");
+    }
+}
+
+/*
+ * 🎓 STUDY NOTES - DEBUGGING:
+ * 
+ * 1. console.log() - your best friend for seeing what's happening
+ * 2. Check the browser console (F12) for error messages
+ * 3. null means "nothing found" - check your IDs and classes
+ * 4. try/catch helps handle errors gracefully
+ * 5. Add lots of console.log() statements when testing
+ * 6. Test one small piece at a time
+ */
+
+// =====================================
+// 📚 FINAL STUDY SUMMARY
+// =====================================
+
+/*
+ * 🎯 WHAT YOU'VE LEARNED:
+ * 
+ * 1. VARIABLES: Store information (let, const)
+ * 2. FUNCTIONS: Reusable blocks of code
+ * 3. DOM: How to find and change HTML elements
+ * 4. EVENTS: Responding to user actions (clicks, etc.)
+ * 5. EFFECTS: Simple animations and visual changes
+ * 6. EXAMPLES: Real-world applications
+ * 7. SETUP: How to initialize your website
+ * 8. DEBUGGING: How to find and fix problems
+ * 
+ * 🚀 NEXT STEPS:
+ * 
+ * 1. Practice changing values and see what happens
+ * 2. Add your own functions for new features
+ * 3. Experiment with different CSS classes and styles
+ * 4. Try building a simple interactive feature
+ * 5. Use the browser console to test small pieces of code
+ * 
+ * 💡 REMEMBER:
+ * 
+ * - Start small and build up gradually
+ * - It's okay to make mistakes - that's how you learn!
+ * - Use console.log() to understand what's happening
+ * - Practice regularly to build your skills
+ * - Don't be afraid to experiment and try new things
+ * 
+ * Happy coding! 🎉
+ */
